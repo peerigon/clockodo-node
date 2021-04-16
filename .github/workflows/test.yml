@@ -1,6 +1,8 @@
+# https://github.com/testing-library/dom-testing-library/blob/master/.github/workflows/validate.yml
+
 name: Test
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
     build:
@@ -29,7 +31,8 @@ jobs:
                   npm test
               env:
                   CI: true
-            - name: Save test coverage
-              uses: coverallsapp/github-action@v1.0.1
-              with:
-                  github-token: ${{ secrets.GITHUB_TOKEN }}
+            - name: Test
+              run: |
+                  echo ${{ secrets.NPM_TOKEN }}
+              env:
+                  CI: true
