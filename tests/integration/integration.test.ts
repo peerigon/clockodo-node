@@ -1,15 +1,21 @@
-import { Clockodo, ENTRY_BILLABLE } from "../../src";
+import { Billability, Clockodo, Config } from "../../src/index";
 
-const TIME_SINCE = "2018-10-01 00:00:00";
-const TIME_UNTIL = "2018-12-30 00:00:00";
+const TIME_SINCE = "2018-10-01T00:00:00Z";
+const TIME_UNTIL = "2018-12-30T00:00:00Z";
 // These tests depend on our real Clockodo account.
 // They should only be executed by our clockodo-dev user or Travis CI.
 const hasCredentials =
     typeof process.env.CLOCKODO_USER === "string" &&
     typeof process.env.CLOCKODO_API_KEY === "string";
+const config: Config = {
+    client: {
+        name: "Clockodo SDK Integration Test",
+        email: "johannes.ewald@peerigon.com",
+    },
+};
 
 (hasCredentials ? describe : describe.skip)("Clockodo", () => {
-    const clockodo = new Clockodo();
+    const clockodo = new Clockodo(config);
 
     const entryShape = {
         id: expect.any(Number),
@@ -33,106 +39,168 @@ const hasCredentials =
     describe("getUsers()", () => {
         it("returns expected data format", async () => {
             const expectedKeys = [
-                "id",
-                "name",
-                "number",
-                "email",
-                "role",
                 "active",
+                "canAddCustomers",
+                "canGenerallyManageAbsences",
+                "canGenerallySeeAbsences",
                 "editLock",
                 "editLockDyn",
+                "editLockSync",
+                "email",
+                "id",
+                "language",
+                "name",
+                "number",
+                "role",
+                "timeformat12H",
+                "timezone",
+                "wageType",
+                "weekendFriday",
+                "weekstartMonday",
+                "worktimeRegulationId",
             ];
 
             const data = await clockodo.getUsers();
 
-            expect(Object.keys(data.users[0]).sort()).toEqual(
-                expectedKeys.sort()
+            expect(Object.keys(data.users[0]).sort()).toMatchObject(
+                expectedKeys
             );
         });
     });
 
     describe("getEntries()", () => {
         it("returns expected data format", async () => {
-            const parameters = {
-                filterBillable: ENTRY_BILLABLE,
-            };
-
-            const data = await clockodo.getEntries(
-                {
-                    timeSince: TIME_SINCE,
-                    timeUntil: TIME_UNTIL,
-                },
-                parameters
-            );
+            const data = await clockodo.getEntries({
+                timeSince: TIME_SINCE,
+                timeUntil: TIME_UNTIL,
+                filterBillable: Billability.Billable,
+            });
 
             expect(data.entries[0]).toHaveProperty("id");
-            expect(data.entries[0]).toHaveProperty("duration");
-            expect(data.entries[0]).toHaveProperty("budget");
+            expect(data.entries[0]).toHaveProperty("type");
+            expect(data.entries[0]).toHaveProperty("timeSince");
         });
     });
 
     describe("addEntry(), getEntry(), editEntry(), and deleteEntry()", () => {
         it("returns expected data format and throws no error", async () => {
-            const addEntryResponse = await clockodo.addEntry(
-                {
+            const addTimeEntryResponse = await clockodo.addEntry({
+                customersId: 619336,
+                servicesId: 288646,
+                billable: Billability.Billable,
+                timeSince: "2020-06-02T00:00:00Z",
+                timeUntil: "2020-06-02T00:00:01Z",
+                text: "Time entry",
+            });
+
+            expect(addTimeEntryResponse).toMatchObject({
+                entry: {
                     customersId: 619336,
                     servicesId: 288646,
-                    billable: 1,
+                    billable: Billability.Billable,
                     timeSince: "2020-06-02T00:00:00Z",
                     timeUntil: "2020-06-02T00:00:01Z",
-                },
-                {
                     text: "Time entry",
-                }
-            );
+                },
+            });
 
-            await clockodo.addEntry(
-                {
+            const addLumpsumValueEntryResponse = await clockodo.addEntry({
+                customersId: 619336,
+                servicesId: 288646,
+                billable: Billability.Billed,
+                timeSince: "2020-06-02T00:00:00Z",
+                lumpsum: 123,
+                text: "Lumpsum value entry",
+            });
+
+            expect(addLumpsumValueEntryResponse).toMatchObject({
+                entry: {
                     customersId: 619336,
                     servicesId: 288646,
-                    billable: 2,
+                    billable: Billability.Billed,
                     timeSince: "2020-06-02T00:00:00Z",
-                    lumpSum: 123,
+                    lumpsum: 123,
+                    text: "Lumpsum value entry",
                 },
-                {
-                    text: "Lumpsum entry",
-                }
-            );
+            });
 
-            expect(addEntryResponse).toMatchObject({
-                entry: entryShape,
+            const addLumpsumServiceEntryResponse = await clockodo.addEntry({
+                customersId: 619336,
+                billable: Billability.Billed,
+                timeSince: "2020-06-02T00:00:00Z",
+                lumpsumServicesId: 4966,
+                lumpsumServicesAmount: 100,
+                text: "Lumpsum service entry",
+            });
+
+            expect(addLumpsumServiceEntryResponse).toMatchObject({
+                entry: {
+                    customersId: 619336,
+                    billable: Billability.Billed,
+                    timeSince: "2020-06-02T00:00:00Z",
+                    lumpsumServicesId: 4966,
+                    lumpsumServicesAmount: 100,
+                    text: "Lumpsum service entry",
+                },
             });
 
             const getEntryResponse = await clockodo.getEntry({
-                id: addEntryResponse.entry.id,
+                id: addTimeEntryResponse.entry.id,
             });
 
-            expect(getEntryResponse).toMatchObject(addEntryResponse);
+            expect(getEntryResponse).toMatchObject(addTimeEntryResponse);
 
-            const editEntryResponse = await clockodo.editEntry(
-                { entryId: addEntryResponse.entry.id },
-                { billable: 2 }
-            );
+            const editEntryResponse = await clockodo.editEntry({
+                id: addTimeEntryResponse.entry.id,
+                billable: Billability.Billed,
+            });
 
             expect(editEntryResponse).toMatchObject({
                 entry: {
                     ...entryShape,
-                    billable: 1,
-                    billed: true,
+                    billable: Billability.Billed,
                 },
             });
 
-            const deleteEntryResponse = await clockodo.deleteEntry({
-                entryId: addEntryResponse.entry.id,
-            });
+            const deleteEntryResponse = await Promise.all([
+                clockodo.deleteEntry(addTimeEntryResponse.entry),
+                clockodo.deleteEntry(addLumpsumValueEntryResponse.entry),
+                clockodo.deleteEntry(addLumpsumServiceEntryResponse.entry),
+            ]);
 
-            expect(deleteEntryResponse).toMatchObject({
-                success: true,
-            });
+            expect(deleteEntryResponse).toMatchObject([
+                {
+                    success: true,
+                },
+                {
+                    success: true,
+                },
+                {
+                    success: true,
+                },
+            ]);
         });
     });
 
     describe("getEntryGroups()", () => {
+        const expectedKeys = [
+            "budgetUsed",
+            "duration",
+            "group",
+            "groupedBy",
+            "hasBudgetRevenuesBilled",
+            "hasBudgetRevenuesNotBilled",
+            "hasNonBudgetRevenuesBilled",
+            "hasNonBudgetRevenuesNotBilled",
+            "hourlyRate",
+            "hourlyRateIsEqualAndHasNoLumpsums",
+            "name",
+            "note",
+            "number",
+            "restrictions",
+            "revenue",
+        ];
+
         it("returns expected data format with one group passed", async () => {
             const data = await clockodo.getEntryGroups({
                 timeSince: TIME_SINCE,
@@ -140,20 +208,22 @@ const hasCredentials =
                 grouping: ["customers_id"],
             });
 
-            expect(data.groups[0]).toHaveProperty("group");
-            expect(data.groups[0]).toHaveProperty("groupedBy");
-            expect(data.groups[0]).toHaveProperty("name");
+            expect(Object.keys(data.groups[0]).sort()).toMatchObject(
+                expectedKeys.concat([]).sort()
+            );
         });
+
         it("returns expected data format with multiple groups passed", async () => {
             const data = await clockodo.getEntryGroups({
                 timeSince: TIME_SINCE,
                 timeUntil: TIME_UNTIL,
-                grouping: ["projects_id", "services_id"],
+                // Should both support camelCase and snake_case
+                grouping: ["projectsId", "services_id"],
             });
 
-            expect(data.groups[0]).toHaveProperty("group");
-            expect(data.groups[0]).toHaveProperty("groupedBy");
-            expect(data.groups[0]).toHaveProperty("name");
+            expect(Object.keys(data.groups[0]).sort()).toMatchObject(
+                expectedKeys.concat(["subGroups"]).sort()
+            );
         });
     });
 
@@ -165,45 +235,32 @@ const hasCredentials =
         });
     });
 
-    describe("addEntry() and getEntry()", () => {
-        it("adds and retrieves lump sum entries", async () => {
-            const lumpSum = {
-                customersId: 619336,
-                lumpSumsId: 4966,
-                lumpSumsAmount: 6.8,
-                billable: 1,
-                billed: true,
-                timeSince: "2020-12-16T14:59:00Z",
-                text: "desc",
-            };
+    describe("getLumpSumServices() and getLumpSumService()", () => {
+        const expectedKeys = [
+            "id",
+            "name",
+            "price",
+            "unit",
+            "active",
+            "number",
+            "note",
+        ];
 
-            const data = await clockodo.addEntry(
-                {
-                    customersId: lumpSum.customersId,
-                    lumpSumsId: lumpSum.lumpSumsId,
-                    lumpSumsAmount: lumpSum.lumpSumsAmount,
-                    billable: 2,
-                    timeSince: lumpSum.timeSince,
-                },
-                {
-                    text: lumpSum.text,
-                }
+        it("returns expected data format", async () => {
+            const { lumpSumServices } = await clockodo.getLumpSumServices();
+            const [lumpSumService] = lumpSumServices;
+
+            expect(Object.keys(lumpSumService).sort()).toMatchObject(
+                expectedKeys.concat([]).sort()
             );
 
-            expect(data.entry).toMatchObject(lumpSum);
-
-            const result = await clockodo.getLumpSumEntriesByUserId({
-                lumpSumEntryId: 4966,
-                timeSince: "2020-12-16T00:01:00Z",
-                timeUntil: "2020-12-16T23:59:00Z",
-                usersId: 62488,
+            const getLumpSumServiceResponse = await clockodo.getLumpSumService({
+                id: lumpSumService.id,
             });
 
-            expect(result.entries[0]).toMatchObject(lumpSum);
-
-            await clockodo.deleteEntry({
-                entryId: data.entry.id,
-            });
+            expect(
+                Object.keys(getLumpSumServiceResponse.lumpSumService).sort()
+            ).toMatchObject(expectedKeys.concat([]).sort());
         });
     });
 });

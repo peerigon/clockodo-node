@@ -4,14 +4,15 @@ import {
     Project,
     Service,
     User,
+    TimeEntry,
     Entry,
     Paging,
     Filter,
     Task,
     EntryGroup,
     UserReport,
-    TargetHoursRow,
-    LumpSumService,
+    TargethoursRow,
+    LumpsumService,
 } from "./interfaces";
 
 export type AbsenceReturnType = Promise<{ absence: Absence }>;
@@ -22,8 +23,13 @@ export type CustomersReturnType = Promise<{ customers: Array<Customer> }>;
 export type ProjectReturnType = Promise<{ project: Project }>;
 export type ServiceReturnType = Promise<{ service: Service }>;
 export type ServicesReturnType = Promise<{ services: Array<Service> }>;
-export type LumpSumServicesReturnType = Promise<{
-    lumpSumServices: Array<LumpSumService>;
+export type LumpsumServiceReturnType = Promise<{
+    // This endpoint still uses the old lumpSum casing
+    lumpSumService: LumpsumService;
+}>;
+export type LumpsumServicesReturnType = Promise<{
+    // This endpoint still uses the old lumpSum casing
+    lumpSumServices: Array<LumpsumService>;
 }>;
 export type UserReturnType = Promise<{ user: User }>;
 export type UsersReturnType = Promise<{ users: Array<User> }>;
@@ -31,7 +37,7 @@ export type EntryReturnType = Promise<{ entry: Entry }>;
 export type AddEntryReturnType = Promise<{ entry: Entry; stopped?: Entry }>;
 export type EditEntryReturnType = Promise<{
     entry: Entry;
-    running: null | Entry;
+    running: null | TimeEntry;
 }>;
 export type EntriesReturnType = Promise<{
     paging: Paging;
@@ -59,34 +65,32 @@ export type DeleteEntryGroupsReturnType = Promise<
 >;
 export type UserReportReturnType = Promise<{ userreport: UserReport }>;
 export type UserReportsReturnType = Promise<{ userreports: Array<UserReport> }>;
-export type ClockReturnType = Promise<{ running: null | Entry }>;
+export type ClockReturnType = Promise<{
+    running: null | TimeEntry;
+    currentTime: string;
+}>;
 export type ClockStartReturnType = Promise<{
-    running: Entry;
-    stopped?: Entry;
+    running: TimeEntry;
+    stopped?: TimeEntry;
+    currentTime: string;
 }>;
 export type ClockStopReturnType = Promise<{
-    stopped: Entry;
-    running: null | Entry;
+    stopped: TimeEntry;
+    running: null | TimeEntry;
+    currentTime: string;
 }>;
 export type ClockEditReturnType = Promise<{
-    updated: Entry;
-    running: null | Entry;
-}>;
-export type ClockUpdateReturnType = Promise<{
-    running: null | Entry;
-    services: Array<Service>;
-    projects: Array<{
-        id: number;
-        name: string;
-        access: { add: boolean; edit: boolean };
-    }>;
-    billable: { [key: string]: number };
-    user: User;
+    updated: TimeEntry;
+    running: null | TimeEntry;
+    currentTime: string;
 }>;
 export type SearchTextsReturnType = Promise<{ texts: Array<string> }>;
-export type TargetHourReturnType = Promise<{ targethours: TargetHoursRow }>;
-export type TargetHoursReturnType = Promise<{
-    targethours: Array<TargetHoursRow>;
+
+export type TargethoursRowReturnType = Promise<{
+    targethoursRow: TargethoursRow;
+}>;
+export type TargethoursReturnType = Promise<{
+    targethours: Array<TargethoursRow>;
 }>;
 export type AddUserReturnType = Promise<{
     success: "true";

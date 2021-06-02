@@ -1,3 +1,107 @@
+# [8.1.0-beta.14](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.13...v8.1.0-beta.14) (2021-06-02)
+
+
+### Bug Fixes
+
+* Revert incorrect typing of timeClockedSince ([cc4d797](https://github.com/peerigon/clockodo/commit/cc4d79739a028d5765efae0957fc75dafa7bd895))
+
+# [8.1.0-beta.13](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.12...v8.1.0-beta.13) (2021-06-02)
+
+
+### Bug Fixes
+
+* TimeEntry typing of timeClockedSince property ([770f47a](https://github.com/peerigon/clockodo/commit/770f47ad292ae29371e3fa567523cda3354b1b94))
+
+# [8.1.0-beta.12](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.11...v8.1.0-beta.12) (2021-05-31)
+
+
+### Features
+
+* Add API v2 changes ([0f8bc56](https://github.com/peerigon/clockodo/commit/0f8bc5637911b9ceea4c53a973c7bd7fff5068d0))
+
+# [8.1.0-beta.11](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.10...v8.1.0-beta.11) (2021-05-31)
+
+
+### Features
+
+* remove offset property ([bbf047b](https://github.com/peerigon/clockodo/commit/bbf047b08c6a3da7647128f747fe7e85d66c5cbf))
+
+# [8.1.0-beta.10](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.9...v8.1.0-beta.10) (2021-05-31)
+
+
+### Features
+
+* Publish beta version ([1446e55](https://github.com/peerigon/clockodo/commit/1446e557c0e934dbefac2b666ee29f7c5cd8933b))
+
+# [8.1.0-beta.9](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.8...v8.1.0-beta.9) (2021-05-25)
+
+
+### Features
+
+* Publish beta version ([000369a](https://github.com/peerigon/clockodo/commit/000369a40bb3995c1926dfab53a2f3a12e526a3d))
+
+# [8.1.0-beta.8](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.7...v8.1.0-beta.8) (2021-05-25)
+
+
+### Features
+
+* Publish beta version ([2018711](https://github.com/peerigon/clockodo/commit/201871129cc94772b4920c59bad55912e9675391))
+
+# [8.1.0-beta.7](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.6...v8.1.0-beta.7) (2021-05-19)
+
+
+### Features
+
+* Introduce enums ([0515034](https://github.com/peerigon/clockodo/commit/0515034de054d1aeceb888ba3c59bef4812ae373))
+
+# [8.1.0-beta.6](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.5...v8.1.0-beta.6) (2021-05-07)
+
+
+### Bug Fixes
+
+* Make header required and use it in integration tests ([a028311](https://github.com/peerigon/clockodo/commit/a02831172a4a9438726c114daa715bab559a74d7))
+* Repair Tests ([865aede](https://github.com/peerigon/clockodo/commit/865aede39eb96cb2001d9caa1938b0660fd161f0))
+
+# [8.1.0-beta.5](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.4...v8.1.0-beta.5) (2021-05-05)
+
+
+### Bug Fixes
+
+* Correct more types ([323bed5](https://github.com/peerigon/clockodo/commit/323bed55e50f6bf62cb793cdf47d904c87f8f2de))
+
+# [8.1.0-beta.4](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.3...v8.1.0-beta.4) (2021-04-30)
+
+
+### Bug Fixes
+
+* Correct type attribution ([f895fa9](https://github.com/peerigon/clockodo/commit/f895fa925c63a1dbec6800452e2074930dc69b46))
+
+# [8.1.0-beta.3](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.2...v8.1.0-beta.3) (2021-04-29)
+
+
+### Bug Fixes
+
+* Improve types ([9266392](https://github.com/peerigon/clockodo/commit/9266392df6660268837cd656e134f58b2cdf0340))
+
+# [8.1.0-beta.2](https://github.com/peerigon/clockodo/compare/v8.1.0-beta.1...v8.1.0-beta.2) (2021-04-27)
+
+
+### Bug Fixes
+
+* Improve types and wording ([3f79891](https://github.com/peerigon/clockodo/commit/3f798911a6d93fb3929638ec09dc237b58b184ff))
+
+# [8.1.0-beta.1](https://github.com/peerigon/clockodo/compare/v8.0.7...v8.1.0-beta.1) (2021-04-27)
+
+
+### Bug Fixes
+
+* Repair Unit Tests ([8da6020](https://github.com/peerigon/clockodo/commit/8da60206924a24c6827a59f2f0c50a0055cd8c6e))
+
+
+### Features
+
+* Use new endpoints in code, remove old ones ([d3495f4](https://github.com/peerigon/clockodo/commit/d3495f4053c864c2736adaad6e01407b55c30177))
+
 ## [8.0.7](https://github.com/peerigon/clockodo/compare/v8.0.6...v8.0.7) (2021-04-16)
 
 

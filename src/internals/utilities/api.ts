@@ -29,6 +29,24 @@ export type Authentication = {
 };
 
 export type Config = {
+    /**
+     * Information about the client that is going to do the requests.
+     * Will be sent as X-Clockodo-External-Application.
+     */
+    client: {
+        /**
+         * Name of the application or your company
+         */
+        name: string;
+        /**
+         * E-mail address of a technical contact person
+         */
+        email: string;
+    };
+    /**
+     * Authentication for all requests.
+     * Uses cookie authentication if undefined.
+     */
     authentication?: Authentication;
     baseUrl?: string;
 };
@@ -40,12 +58,23 @@ export class Api {
         },
     });
 
-    constructor({ baseUrl = DEFAULT_BASE_URL, authentication }: Config) {
-        this.config({ authentication, baseUrl });
+    constructor({
+        baseUrl = DEFAULT_BASE_URL,
+        authentication,
+        client,
+    }: Config) {
+        // This check is for non-TypeScript users only
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (!client) {
+            throw new Error(
+                `Client identification missing: The Clockodo API requires a client identification now. See "Installation and usage" instructions for more information.`
+            );
+        }
+        this.config({ client, authentication, baseUrl });
     }
 
-    config = (config: Config) => {
-        const { authentication, baseUrl } = config;
+    config = (config: Partial<Config>) => {
+        const { authentication, baseUrl, client } = config;
         const defaults = this[axiosClient].defaults;
 
         if (baseUrl) {
@@ -55,6 +84,25 @@ export class Api {
                 );
             }
             defaults.baseURL = baseUrl;
+        }
+        if (client) {
+            const { name, email } = client;
+
+            if (typeof name !== "string") {
+                throw new Error(
+                    `name should be a string but is typeof: ${typeof name}`
+                );
+            }
+
+            if (typeof email !== "string") {
+                throw new Error(
+                    `email should be a string but is typeof: ${typeof email}`
+                );
+            }
+
+            defaults.headers[
+                "X-Clockodo-External-Application"
+            ] = `${name};${email}`;
         }
         if ("authentication" in config) {
             if (authentication === undefined) {

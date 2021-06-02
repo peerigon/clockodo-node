@@ -1,10 +1,16 @@
+import {
+    EntryType,
+    LumpsumEntryBillability,
+    TimeEntryBillability,
+} from "./enums";
+
 export type Customer = {
     id: number;
     name: string;
     number: string | null;
     active: boolean;
     billableDefault: boolean;
-    note: string | null;
+    note?: string | null;
     projects?: Array<Project> | null;
 };
 
@@ -33,7 +39,7 @@ export type Service = {
     note: string | null;
 };
 
-export type LumpSumService = {
+export type LumpsumService = {
     id: number;
     name: string;
     price: number;
@@ -59,74 +65,106 @@ export type User = {
     timezone: string;
 };
 
-export type Entry = {
+type CommonEntry = {
     id: number;
-    projectsId: number | 0;
-    customersId: number | 0;
+    customersId: number;
+    projectsId: number | null;
     usersId: number;
-    servicesId: number | null;
-    lumpSumsId: number | null;
-    lumpSum: number | null;
-    lumpSumsAmount: number | null;
-    billable: 0 | 1;
-    billed: boolean;
     textsId: number | null;
     text: string | null;
-    duration: number;
-    durationTime: string;
-    offset: number;
-    offsetTime: string;
     timeSince: string;
-    timeClockedSince?: string;
-    timeUntil: string | null;
     timeInsert: string;
     timeLastChange: string;
-    timeLastChangeWorkTime: string;
-    clocked: boolean;
-    isClocking: boolean;
-    offline: boolean;
-    hourlyRate?: number;
-    revenue?: number;
-    budget?: number;
-    budgetIsHours?: boolean;
-    budgetIsNotStrict?: boolean;
-    customersName?: string;
-    projectsName?: string | null;
-    servicesName?: string | null;
-    usersName?: string;
-    lumpSumsPrice?: number | null;
-    lumpSumsUnit?: string | null;
-    lumpSumsName?: string | null;
 };
 
-export type Task = {
-    day: string;
-    customersId: number;
-    customersName: string;
-    projectsId: number | 0;
-    projectsName: string | null;
-    servicesId: number | null;
-    servicesName: string | null;
-    lumpSumsId: number | null;
-    lumpSumsAmount: number | null;
-    lumpSumsName: string | null;
-    lumpSumsPrice: number | null;
-    lumpSumsUnit: string | null;
-    billable: 0 | 1;
-    textsId: number | 0;
-    text: string | null;
-    timeSince: string;
+// Initially we've split up TimeEntry here into ClockingTimeEntry | ClockedTimeEntry | ManualTimeEntry
+// We had to revert this because the shared 'type' tag property does not differentiate between
+// these types. Without a shared tag property, it's impossible for TypeScript to infer the correct type.
+export type TimeEntry = CommonEntry & {
+    type: EntryType.Time;
+    servicesId: number;
+    /** Will be null if clocked is false */
+    timeClockedSince: string | null;
+    timeUntil: string | null;
+    timeLastChangeWorkTime: string;
+    billable: TimeEntryBillability;
+    duration: number | null;
+    clocked: boolean;
+    clockedOffline: boolean;
+    /** Only present with sufficient access rights */
+    hourlyRate?: number;
+};
+
+export type LumpsumValueEntry = CommonEntry & {
+    type: EntryType.LumpsumValue;
     timeUntil: string;
+    billable: LumpsumEntryBillability;
+    servicesId: number;
+    lumpsum: number;
+};
+
+export type LumpsumServiceEntry = CommonEntry & {
+    type: EntryType.LumpsumService;
+    timeUntil: string;
+    billable: LumpsumEntryBillability;
+    lumpsumServicesId: number;
+    lumpsumServicesAmount: number;
+};
+
+export type Entry = TimeEntry | LumpsumValueEntry | LumpsumServiceEntry;
+
+/** @deprecated */
+export type Task = {
+    /** @deprecated */
+    day: string;
+    /** @deprecated */
+    customersId: number;
+    /** @deprecated */
+    customersName: string;
+    /** @deprecated */
+    projectsId: number | 0;
+    /** @deprecated */
+    projectsName: string | null;
+    /** @deprecated */
+    servicesId: number | null;
+    /** @deprecated */
+    servicesName: string | null;
+    /** @deprecated */
+    lumpsumsId: number | null;
+    /** @deprecated */
+    lumpsumsAmount: number | null;
+    /** @deprecated */
+    lumpsumsName: string | null;
+    /** @deprecated */
+    lumpsumsPrice: number | null;
+    /** @deprecated */
+    lumpsumsUnit: string | null;
+    /** @deprecated */
+    billable: 0 | 1;
+    /** @deprecated */
+    textsId: number | 0;
+    /** @deprecated */
+    text: string | null;
+    /** @deprecated */
+    timeSince: string;
+    /** @deprecated */
+    timeUntil: string;
+    /** @deprecated */
     duration: number;
+    /** @deprecated */
     durationTime: string;
+    /** @deprecated */
     durationText: string;
+    /** @deprecated */
     isClocking: boolean;
-    hasJustLumpSums: boolean;
+    /** @deprecated */
+    hasJustLumpsums: boolean;
+    /** @deprecated */
     revenue?: number;
 };
 
 export type EntryGroup = {
-    groupeyby: string;
+    groupedBy: string;
     group: string | number;
     name: string;
     number: string;
@@ -139,12 +177,12 @@ export type EntryGroup = {
     hasBudgetRevenuesNotBilled?: boolean;
     hasNonBudgetRevenuesBilled?: boolean;
     hasNonBudgetRevenuesNotBilled?: boolean;
-    hourlyRate?: number;
-    hourlyRateIsEqualAndHasNoLumpSums?: boolean;
+    hourlyRate?: number | null;
+    hourlyRateIsEqualAndHasNoLumpsums?: boolean;
     durationWithoutRounding?: number;
     revenueWithoutRounding?: number;
     roundingSuccess?: boolean;
-    subGroups: Array<EntryGroup>;
+    subGroups?: Array<EntryGroup>;
 };
 
 export type UserReport = {
@@ -225,7 +263,7 @@ export type Absence = {
     approvedBy: number;
 };
 
-export type TargetHoursRow = {
+export type TargethoursRow = {
     id: number;
     usersId: number;
     type: string;
@@ -251,15 +289,15 @@ export type TargetHoursRow = {
     workdaySunday: boolean;
 };
 
-export type HolidayQuotasRow = {
+export type HolidayquotaRow = {
     id: number;
     usersId: number;
     yearSince: number;
-    yearUntil: number;
+    yearUntil: number | null;
     count: number;
 };
 
-export type HolidaysCarryRow = {
+export type HolidayscarryRow = {
     usersId: number;
     year: number;
     count: number;
